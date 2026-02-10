@@ -1,0 +1,32 @@
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #020617;
+        }
+
+        .hero-overlay {
+            background: linear-gradient(to bottom, rgba(2, 6, 23, 0.4), rgba(2, 6, 23, 0.9));
+        }
+
+        .custom-shadow {
+            box-shadow: 0 10px 30px -10px rgba(249, 115, 22, 0.3);
+        }
+
+        .toast-slide {
+            animation: slideIn 0.5s ease-out forwards;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translate(-50%, -100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translate(-50%, 20px);
+                opacity: 1;
+            }
+        }
+
+        .product-card {
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
