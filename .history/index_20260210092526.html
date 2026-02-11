@@ -153,30 +153,29 @@
                     <span id="modal-product-name" class="text-white font-bold text-lg">Product Name</span>
                 </div>
 
-                <form id="order-form" class="space-y-5" action="send.php" method="post">
-                    <input type="hidden" id="product-price" name="product-price" value="" readonly>
-                    <input type="hidden" id="product-name" name="product-name" value="" readonly>
-                    <input type="hidden" name="done" value="1">
+                <form id="order-form" class="space-y-5">
+                    <input type="hidden" id="product-price" name="product-price" value="product-price" readonly>
+                    <input type="hidden" id="product-name" name="product-name" value="product-name" readonly>
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Full
                             Name</label>
-                        <input type="text" name="client-name" required
+                        <input type="text" required
                             class="w-full bg-slate-800 border border-slate-700 text-white px-4 py-4 rounded-md focus:ring-1 focus:ring-orange-600 focus:border-orange-600 outline-none transition">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Phone
                             Number</label>
-                        <input type="tel" name="client-phone" required
+                        <input type="tel" required
                             class="w-full bg-slate-800 border border-slate-700 text-white px-4 py-4 rounded-md focus:ring-1 focus:ring-orange-600 focus:border-orange-600 outline-none transition">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Full
                             Address</label>
-                        <textarea required name="client-adress"
+                        <textarea required
                             class="w-full bg-slate-800 border border-slate-700 text-white px-4 py-4 rounded-md focus:ring-1 focus:ring-orange-600 focus:border-orange-600 outline-none transition h-28 resize-none"></textarea>
                     </div>
 
-                    <button type="submit" name="done"
+                    <button type="submit"
                         class="w-full bg-orange-600 text-white py-5 rounded-md font-black text-xl hover:bg-orange-500 transition-all uppercase tracking-tighter custom-shadow">
                         Confirm Purchase
                     </button>
@@ -285,14 +284,27 @@
         }
 
         orderForm.addEventListener('submit', (e) => {
-            // REMOVE e.preventDefault() to allow form to submit to PHP
-            // e.preventDefault(); // <-- REMOVE THIS LINE
+            // Note: Since you are using e.preventDefault(), the form won't actually go to PHP yet.
+            // If you want it to submit to PHP, you would remove e.preventDefault() 
+            // OR use fetch() to send the data here.
+            e.preventDefault();
 
-            const btn = e.target.querySelector('button[type="submit"]');
+            const btn = e.target.querySelector('button');
+            const originalText = btn.innerText;
             btn.innerText = 'PROCESSING...';
             btn.disabled = true;
 
-            // Form will now submit normally to send.php
+            setTimeout(() => {
+                cartCount++;
+                cartCountEl.innerText = cartCount;
+
+                btn.innerText = originalText;
+                btn.disabled = false;
+                orderForm.reset();
+                closeModal();
+
+                showToast();
+            }, 800);
         });
 
         window.addEventListener('keydown', (e) => {

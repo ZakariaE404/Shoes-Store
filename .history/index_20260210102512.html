@@ -156,7 +156,6 @@
                 <form id="order-form" class="space-y-5" action="send.php" method="post">
                     <input type="hidden" id="product-price" name="product-price" value="" readonly>
                     <input type="hidden" id="product-name" name="product-name" value="" readonly>
-                    <input type="hidden" name="done" value="1">
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Full
                             Name</label>
@@ -285,14 +284,22 @@
         }
 
         orderForm.addEventListener('submit', (e) => {
-            // REMOVE e.preventDefault() to allow form to submit to PHP
-            // e.preventDefault(); // <-- REMOVE THIS LINE
-
-            const btn = e.target.querySelector('button[type="submit"]');
+            const btn = e.target.querySelector('button');
+            const originalText = btn.innerText;
             btn.innerText = 'PROCESSING...';
             btn.disabled = true;
 
-            // Form will now submit normally to send.php
+            setTimeout(() => {
+                cartCount++;
+                cartCountEl.innerText = cartCount;
+
+                btn.innerText = originalText;
+                btn.disabled = false;
+                orderForm.reset();
+                closeModal();
+
+                showToast();
+            }, 800);
         });
 
         window.addEventListener('keydown', (e) => {

@@ -5,7 +5,7 @@
 $host = "localhost";
 $user = "root";
 $pass = "";
-$db = "store_test";
+$db = "db_shoes_store";
 
 // Create connection
 $conn = new mysqli($host, $user, $pass, $db);

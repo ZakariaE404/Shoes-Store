@@ -156,7 +156,6 @@
                 <form id="order-form" class="space-y-5" action="send.php" method="post">
                     <input type="hidden" id="product-price" name="product-price" value="" readonly>
                     <input type="hidden" id="product-name" name="product-name" value="" readonly>
-                    <input type="hidden" name="done" value="1">
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Full
                             Name</label>
@@ -285,14 +284,22 @@
         }
 
         orderForm.addEventListener('submit', (e) => {
-            // REMOVE e.preventDefault() to allow form to submit to PHP
-            // e.preventDefault(); // <-- REMOVE THIS LINE
-
-            const btn = e.target.querySelector('button[type="submit"]');
+            const btn = e.target.querySelector('button');
+            const originalText = btn.innerText;
             btn.innerText = 'PROCESSING...';
             btn.disabled = true;
 
-            // Form will now submit normally to send.php
+            setTimeout(() => {
+                cartCount++;
+                cartCountEl.innerText = cartCount;
+
+                btn.innerText = originalText;
+                btn.disabled = false;
+                orderForm.reset();
+                closeModal();
+
+                showToast();
+            }, 800);
         });
 
         window.addEventListener('keydown', (e) => {
@@ -302,3 +309,46 @@
 </body>
 
 </html>
+<?php
+// 1. Database Configuration
+$host = "localhost";
+$user = "root";      // Default for XAMPP/WAMP
+$pass = "";          // Default for XAMPP/WAMP
+$db   = "your_database_name"; // REPLACE WITH YOUR ACTUAL DATABASE NAME
+
+// Create connection
+$conn = new mysqli($host, $user, $pass, $db);
+
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// 2. Check if the form was submitted
+if (isset($_POST["done"])) {
+    
+    // Get data from POST (matching your HTML 'name' attributes)
+    $productName  = $_POST["product-name"];
+    $productPrice = $_POST["product-price"];
+    $clientName   = $_POST["client-name"];
+    $clientPhone  = $_POST["client-phone"];
+    $clientAdr    = $_POST["client-adress"]; // Matches your HTML spelling
+
+    // 3. Secure SQL Injection Protection (Prepared Statement)
+    // We use "ssssd" for: string, string, string, string, double/decimal
+    $stmt = $conn->prepare("INSERT INTO orders (client_fullname, client_phone, client_address, product_name, product_price) VALUES (?, ?, ?, ?, ?)");
+    $stmt->bind_param("ssssd", $clientName, $clientPhone, $clientAdr, $productName, $productPrice);
+
+    if ($stmt->execute()) {
+        // Success! Redirect back to home or show a message
+        echo "Order placed successfully!";
+        // header("Location: index.html?status=success"); // Optional redirect
+    } else {
+        echo "Error: " . $stmt->error;
+    }
+
+    $stmt->close();
+}
+
+$conn->close();
+?>

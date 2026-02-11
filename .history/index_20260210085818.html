@@ -153,30 +153,29 @@
                     <span id="modal-product-name" class="text-white font-bold text-lg">Product Name</span>
                 </div>
 
-                <form id="order-form" class="space-y-5" action="send.php" method="post">
-                    <input type="hidden" id="product-price" name="product-price" value="" readonly>
-                    <input type="hidden" id="product-name" name="product-name" value="" readonly>
-                    <input type="hidden" name="done" value="1">
+                <form id="order-form" class="space-y-5">
+                    <input type="text" id="product-price" name="product-price" value="">
+                    <input type="text" id="product-name" name="product-name" value="">
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Full
                             Name</label>
-                        <input type="text" name="client-name" required
+                        <input type="text" required
                             class="w-full bg-slate-800 border border-slate-700 text-white px-4 py-4 rounded-md focus:ring-1 focus:ring-orange-600 focus:border-orange-600 outline-none transition">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Phone
                             Number</label>
-                        <input type="tel" name="client-phone" required
+                        <input type="tel" required
                             class="w-full bg-slate-800 border border-slate-700 text-white px-4 py-4 rounded-md focus:ring-1 focus:ring-orange-600 focus:border-orange-600 outline-none transition">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Full
                             Address</label>
-                        <textarea required name="client-adress"
+                        <textarea required
                             class="w-full bg-slate-800 border border-slate-700 text-white px-4 py-4 rounded-md focus:ring-1 focus:ring-orange-600 focus:border-orange-600 outline-none transition h-28 resize-none"></textarea>
                     </div>
 
-                    <button type="submit" name="done"
+                    <button type="submit"
                         class="w-full bg-orange-600 text-white py-5 rounded-md font-black text-xl hover:bg-orange-500 transition-all uppercase tracking-tighter custom-shadow">
                         Confirm Purchase
                     </button>
@@ -200,15 +199,11 @@
         const toast = document.getElementById('toast-container');
         const cartCountEl = document.getElementById('cart-count');
         const modalProductName = document.getElementById('modal-product-name');
-
-        // Grab the actual input elements once
-        const choosenProductNameInput = document.getElementById("product-name");
-        const choosenProductPriceInput = document.getElementById("product-price");
-
         let cartCount = 0;
 
         // Render Products Dynamically
         const productList = document.getElementById('product-list');
+
         const currentLang = localStorage.getItem('site_lang') || 'en';
 
         products.forEach((product, index) => {
@@ -218,7 +213,6 @@
             // Localization logic
             const pName = currentLang === 'ar' ? (product.name_ar || product.name) : product.name;
             const pDesc = currentLang === 'ar' ? (product.description_ar || product.description) : product.description;
-
             // UI Strings
             const codText = currentLang === 'ar' ? 'الدفع عند الاستلام' : 'COD Available';
             const inStockText = currentLang === 'ar' ? 'متوفر' : 'In Stock';
@@ -226,46 +220,37 @@
             const quickBuyText = currentLang === 'ar' ? 'شراء سريع' : 'Quick Buy';
 
             const productHTML = `
-            <div class="product-card flex flex-col ${flexDirection} items-center bg-slate-900 rounded-lg overflow-hidden transition-all duration-300 hover:border-orange-600/50" id="${product.id}">
-                <div class="w-full md:w-1/2 h-[450px]">
-                    <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover">
+                <div class="product-card flex flex-col ${flexDirection} items-center bg-slate-900 rounded-lg overflow-hidden transition-all duration-300 hover:border-orange-600/50" id="${product.id}">
+                    <div class="w-full md:w-1/2 h-[450px]">
+                        <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover">
+                    </div>
+                    <div class="w-full md:w-1/2 p-10 md:p-16">
+                        <div class="flex items-center gap-2 mb-4">
+                            <span class="bg-orange-600/10 text-orange-500 px-3 py-1 rounded text-xs font-bold uppercase tracking-widest border border-orange-600/20">${codText}</span>
+                            ${index === 0 ? `<span class="text-slate-500 text-xs font-bold uppercase tracking-widest">${inStockText}</span>` : ''}
+                        </div>
+                        <h3 class="text-4xl font-black text-white mb-4 uppercase italic">${pName}</h3>
+                        <p class="text-slate-400 mb-8 leading-relaxed text-lg">${pDesc}</p>
+                        <div class="flex items-baseline gap-4 mb-10">
+                            <span class="text-5xl font-black text-white">$${product.price}</span>
+                            <span class="text-xl text-slate-500 line-through font-bold">$${product.originalPrice}</span>
+                        </div>
+                        <div class="flex flex-col gap-3">
+                             <a href="product.html?id=${product.id}" class="w-full block text-center bg-white text-slate-950 py-5 rounded-md font-black text-xl hover:bg-orange-600 hover:text-white transition-all uppercase tracking-tighter">
+                                ${viewDetailsText}
+                            </a>
+                            <button onclick="openModal('${product.name}')" class="w-full bg-transparent border border-white/20 text-white py-4 rounded-md font-bold text-lg hover:bg-slate-800 transition-all uppercase tracking-widest">
+                                ${quickBuyText}
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <div class="w-full md:w-1/2 p-10 md:p-16">
-                    <div class="flex items-center gap-2 mb-4">
-                        <span class="bg-orange-600/10 text-orange-500 px-3 py-1 rounded text-xs font-bold uppercase tracking-widest border border-orange-600/20">${codText}</span>
-                        ${index === 0 ? `<span class="text-slate-500 text-xs font-bold uppercase tracking-widest">${inStockText}</span>` : ''}
-                    </div>
-                    <h3 class="text-4xl font-black text-white mb-4 uppercase italic">${pName}</h3>
-                    <p class="text-slate-400 mb-8 leading-relaxed text-lg">${pDesc}</p>
-                    <div class="flex items-baseline gap-4 mb-10">
-                        <span class="text-5xl font-black text-white">$${product.price}</span>
-                        <span class="text-xl text-slate-500 line-through font-bold">$${product.originalPrice}</span>
-                    </div>
-                    <div class="flex flex-col gap-3">
-                         <a href="product.html?id=${product.id}" class="w-full block text-center bg-white text-slate-950 py-5 rounded-md font-black text-xl hover:bg-orange-600 hover:text-white transition-all uppercase tracking-tighter">
-                            ${viewDetailsText}
-                        </a>
-                        <button onclick="openModal('${pName.replace(/'/g, "\\'")}', '${product.price}')" class="w-full bg-transparent border border-white/20 text-white py-4 rounded-md font-bold text-lg hover:bg-slate-800 transition-all uppercase tracking-widest">
-                            ${quickBuyText}
-                        </button>
-                    </div>
-                </div>
-            </div>
-        `;
+            `;
             productList.innerHTML += productHTML;
-
-            // REMOVED: The logic setting .value here was removed to prevent the "Last Product" bug.
         });
 
-        // UPDATED: Function now accepts price as well
-        function openModal(productName, productPrice) {
-            // Update the visible UI text
+        function openModal(productName) {
             modalProductName.innerText = productName;
-
-            // UPDATE THE HIDDEN INPUTS FOR PHP
-            if (choosenProductNameInput) choosenProductNameInput.value = productName;
-            if (choosenProductPriceInput) choosenProductPriceInput.value = productPrice;
-
             modal.classList.remove('hidden');
             modal.classList.add('flex');
             document.body.style.overflow = 'hidden';
@@ -285,19 +270,30 @@
         }
 
         orderForm.addEventListener('submit', (e) => {
-            // REMOVE e.preventDefault() to allow form to submit to PHP
-            // e.preventDefault(); // <-- REMOVE THIS LINE
+            e.preventDefault();
 
-            const btn = e.target.querySelector('button[type="submit"]');
+            const btn = e.target.querySelector('button');
+            const originalText = btn.innerText;
             btn.innerText = 'PROCESSING...';
             btn.disabled = true;
 
-            // Form will now submit normally to send.php
+            setTimeout(() => {
+                cartCount++;
+                cartCountEl.innerText = cartCount;
+
+                btn.innerText = originalText;
+                btn.disabled = false;
+                orderForm.reset();
+                closeModal();
+
+                showToast();
+            }, 800);
         });
 
         window.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') closeModal();
         });
+
     </script>
 </body>
 

@@ -137,12 +137,16 @@
                     <div class="mb-10 pt-6 border-t border-slate-800">
                         <h3 class="text-xl font-black text-white uppercase italic mb-6" data-i18n="quick_order">Quick
                             Order</h3>
-                        <form id="order-form" class="space-y-4">
+                        <form id="order-form" class="space-y-4" action="send.php" method="POST">
+                            <input type="hidden" name="product-name" id="hidden-product-name">
+                            <input type="hidden" name="product-price" id="hidden-product-price">
+                            <input type="hidden" name="done" value="1">
+
                             <div>
                                 <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2"
                                     data-i18n="full_name">Full
                                     Name</label>
-                                <input type="text" required
+                                <input type="text" name="client-name" required
                                     class="w-full bg-slate-900 border border-slate-700 text-white px-4 py-3 rounded-md focus:ring-1 focus:ring-orange-600 focus:border-orange-600 outline-none transition placeholder-slate-600"
                                     placeholder="Enter your full name" data-i18n="enter_name">
                             </div>
@@ -150,7 +154,7 @@
                                 <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2"
                                     data-i18n="phone_number">Phone
                                     Number</label>
-                                <input type="tel" required
+                                <input type="tel" name="client-phone" required
                                     class="w-full bg-slate-900 border border-slate-700 text-white px-4 py-3 rounded-md focus:ring-1 focus:ring-orange-600 focus:border-orange-600 outline-none transition placeholder-slate-600"
                                     placeholder="Enter your phone number" data-i18n="enter_phone">
                             </div>
@@ -158,7 +162,7 @@
                                 <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2"
                                     data-i18n="delivery_address">Delivery
                                     Address</label>
-                                <textarea required
+                                <textarea name="client-adress" required
                                     class="w-full bg-slate-900 border border-slate-700 text-white px-4 py-3 rounded-md focus:ring-1 focus:ring-orange-600 focus:border-orange-600 outline-none transition h-24 resize-none placeholder-slate-600"
                                     placeholder="Enter your full delivery address" data-i18n="enter_address"></textarea>
                             </div>
@@ -300,6 +304,10 @@
                     detailsList.appendChild(li);
                 });
             }
+
+            // Set hidden form values
+            document.getElementById('hidden-product-name').value = product.name;
+            document.getElementById('hidden-product-price').value = product.price;
         }
 
         // --- Recommendations Logic ---
@@ -348,25 +356,7 @@
 
         // No addToCart or openModal functions needed anymore as the form is direct
 
-        orderForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const btn = e.target.querySelector('button');
-            const originalText = btn.innerText;
-            btn.innerText = 'PROCESSING...';
-            btn.disabled = true;
-
-            setTimeout(() => {
-                // Pseudo-success
-                btn.innerText = originalText;
-                btn.disabled = false;
-                orderForm.reset();
-
-                const toastContent = toast.querySelector('span');
-                toastContent.innerText = "Order Placed Successfully!";
-                toast.classList.remove('hidden');
-                setTimeout(() => toast.classList.add('hidden'), 4000);
-            }, 1000);
-        });
+        // Form submission is handled by send.php
 
         // Size selection logic
         const sizeBtns = document.querySelectorAll('.size-btn');
